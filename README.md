@@ -1,1 +1,3 @@
-# digit
+# Digit
+
+The Digicus compiler.

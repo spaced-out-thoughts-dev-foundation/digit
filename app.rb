@@ -108,7 +108,8 @@ class App < Sinatra::Base
           name: loaded_manifest['name'],
           type: loaded_manifest['type'],
           version: loaded_manifest['version'],
-          success: manifest_version == version
+          success: manifest_version == version,
+          source: loaded_manifest['source']
         }
       else
         puts 'No manifest found'

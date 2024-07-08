@@ -50,6 +50,8 @@
         th4.textContent = 'Description';
         const th5 = document.createElement('th');
         th5.textContent = 'Verified';
+        const th6 = document.createElement('th');
+        th6.textContent = 'Source';
 
         const tr = document.createElement('tr');
         tr.appendChild(th1);
@@ -57,6 +59,7 @@
         tr.appendChild(th3);
         tr.appendChild(th4);
         tr.appendChild(th5);
+        tr.appendChild(th6);
         table.appendChild(tr);
 
         data["repositories"].forEach(element => {
@@ -81,6 +84,37 @@
           const td5 = document.createElement('td');
           td5.textContent = element["success"] ? '✅' : '❌';
           tr1.appendChild(td5);
+
+          const td6 = document.createElement('td');
+          if (element["source"]) {
+            const link = document.createElement('a');
+            link.href = element["source"];
+            link.textContent = "View Source";
+
+            // BEGIN CHATGPT GENERATED SEXY, PROFESSIONAL, LINK CSS
+            // Apply CSS styles to the link
+            link.style.color = "#007bff"; // Blue color
+            link.style.textDecoration = "none"; // Remove underline
+            link.style.fontWeight = "bold"; // Bold text
+            link.style.fontFamily = "Arial, sans-serif"; // Font family
+            link.style.fontSize = "14px"; // Font size
+            link.style.borderBottom = "2px solid #007bff"; // Bottom border on hover
+            link.style.transition = "border-bottom 0.3s ease"; // Smooth transition on hover
+
+            // Hover effect
+            link.addEventListener("mouseenter", function () {
+              this.style.borderBottom = "2px solid #0056b3"; // Darker blue on hover
+            });
+            link.addEventListener("mouseleave", function () {
+              this.style.borderBottom = "2px solid #007bff"; // Restore original on mouse leave
+            });
+            // END CHATGPT GENERATED SEXY, PROFESSIONAL, LINK CSS
+
+            td6.appendChild(link);
+          } else {
+            td6.textContent = "Source unavailable";
+          }
+          tr1.appendChild(td6);
 
           table.appendChild(tr1);
         });

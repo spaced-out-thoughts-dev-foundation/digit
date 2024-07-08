@@ -4,6 +4,7 @@ require 'sinatra/base'
 require 'yaml'
 require 'open3'
 require 'json'
+require 'dtr_core'
 
 require 'sinatra/cross_origin'
 
@@ -31,6 +32,13 @@ class App < Sinatra::Base
 
   get '/' do
     send_file 'index.html'
+  end
+
+  get '/api/supported_types_and_instructions' do
+    {
+      supported_instructions: DTRCore::SupportedAttributes::INSTRUCTIONS,
+      supported_types: DTRCore::SupportedAttributes::TYPES
+    }.to_json
   end
 
   post '/api/compile' do
@@ -91,8 +99,6 @@ class App < Sinatra::Base
 
         version = Dir.chdir(repository_path) do
           output, = Open3.capture2e('make version')
-
-          Open3.capture2e('make build')
 
           output.strip
         end

@@ -12,9 +12,16 @@ COPY . .
 
 RUN git clone --recurse-submodules https://github.com/spaced-out-thoughts-dev-foundation/bean-stock.git
 
-RUN CD bean-stock/frontend/digicus_web_frontend && bundle install
-RUN CD bean-stock/backend/digicus_web_backend && bundle install
-RUN CD bean-stock/backend/soroban_rust_backend && bundle install
+COPY subdir_setup.sh /app/subdir_setup.sh
+RUN chmod +x /app/subdir_setup.sh
+
+WORKDIR /usr/src/app/bean-stock/frontend
+RUN /app/subdir_setup.sh $(pwd)
+
+WORKDIR /usr/src/app/bean-stock/backend
+RUN /app/subdir_setup.sh $(pwd)
+
+WORKDIR /usr/src/app
 
 EXPOSE 4567
 

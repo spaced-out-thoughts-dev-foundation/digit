@@ -3,8 +3,30 @@ require 'sinatra'
 require 'sinatra/base'
 require 'yaml'
 require 'open3'
+require 'json'
+
+require 'sinatra/cross_origin'
 
 class App < Sinatra::Base
+  configure do
+    enable :cross_origin
+  end
+
+  before do
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
+  end
+
+  # Handle preflight OPTIONS requests
+  options '*' do
+    response.headers['Allow'] = 'HEAD,GET,POST,PUT,DELETE,OPTIONS'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
+    200
+  end
+
   set :bind, '0.0.0.0'
 
   get '/' do
@@ -20,7 +42,12 @@ class App < Sinatra::Base
     type = json_data['type']
     name = json_data['name']
 
-    Dir.chdir("./bean-stock/#{type}/#{name}") do
+    puts 'Received request'
+    puts "Content: #{content}"
+    puts "Type: #{type}"
+    puts "Name: #{name}"
+
+    output_to_return = Dir.chdir("./bean-stock/#{type}/#{name}") do
       File.delete('temp.rs') if File.exist?('temp.rs')
 
       File.write('temp.rs', content)
@@ -31,12 +58,21 @@ class App < Sinatra::Base
         Open3.capture2e('make run file=temp.rs')
       end
 
-      return {
+      puts "Output: #{output}"
+      puts "Status: #{status.exitstatus}"
+
+      output_to_return = {
         output: output,
         status: status.exitstatus,
         message: "Received JSON data: content = #{content}, type = #{type}, name = #{name}"
       }.to_json
+
+      puts "Output to return: #{output_to_return}"
+
+      output_to_return
     end
+
+    output_to_return
   end
 
   # API endpoint to retrieve a message

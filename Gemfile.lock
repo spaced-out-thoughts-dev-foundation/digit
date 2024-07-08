@@ -20,6 +20,7 @@ GEM
       rack-protection (= 4.0.0)
       rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
+    sinatra-cross_origin (0.4.0)
     tilt (2.4.0)
     webrick (1.8.1)
 
@@ -30,6 +31,7 @@ PLATFORMS
 DEPENDENCIES
   rackup (~> 2.1)
   sinatra (~> 4.0)
+  sinatra-cross_origin
 
 BUNDLED WITH
    2.5.13

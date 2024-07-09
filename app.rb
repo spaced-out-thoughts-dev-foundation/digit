@@ -49,10 +49,6 @@ class App < Sinatra::Base
     content = json_data['content']
     name_types = json_data['name_types']
 
-    puts 'Received request'
-    puts "Content: #{content}"
-    puts "name_types: #{name_types}"
-
     outputs = []
     last_content = content
 
@@ -63,8 +59,6 @@ class App < Sinatra::Base
       starting = Time.now
 
       output_to_return = Dir.chdir("./bean-stock/#{type}/#{name}") do
-        puts "Compiling #{name}"
-
         File.delete('temp.rs') if File.exist?('temp.rs')
 
         File.write('temp.rs', last_content)
@@ -75,9 +69,6 @@ class App < Sinatra::Base
           Open3.capture2e('make run file=temp.rs')
         end
 
-        puts "Output: #{output}"
-        puts "Status: #{status.exitstatus}"
-
         output_to_return = {
           output: output,
           status: status.exitstatus,
@@ -85,8 +76,6 @@ class App < Sinatra::Base
         }.to_json
 
         last_content = output
-
-        puts "Output to return: #{output_to_return}"
 
         outputs << output_to_return
       end

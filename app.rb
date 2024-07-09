@@ -93,7 +93,7 @@ class App < Sinatra::Base
 
       ending = Time.now
 
-      puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{ending - starting} }"
+      puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{ending - starting}, phase: 'full-compile' }"
     end
 
     { results: outputs }.to_json

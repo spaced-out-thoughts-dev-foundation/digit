@@ -59,6 +59,9 @@ class App < Sinatra::Base
     name_types.each do |name_type|
       name = name_type['name']
       type = name_type['type']
+
+      starting = Time.now
+
       output_to_return = Dir.chdir("./bean-stock/#{type}/#{name}") do
         puts "Compiling #{name}"
 
@@ -87,6 +90,10 @@ class App < Sinatra::Base
 
         outputs << output_to_return
       end
+
+      ending = Time.now
+
+      puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{ending - starting} "
     end
 
     { results: outputs }.to_json

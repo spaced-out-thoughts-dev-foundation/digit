@@ -47,40 +47,49 @@ class App < Sinatra::Base
 
     # Access JSON data fields
     content = json_data['content']
-    type = json_data['type']
-    name = json_data['name']
+    name_types = json_data['name_types']
 
     puts 'Received request'
     puts "Content: #{content}"
-    puts "Type: #{type}"
-    puts "Name: #{name}"
+    puts "name_types: #{name_types}"
 
-    output_to_return = Dir.chdir("./bean-stock/#{type}/#{name}") do
-      File.delete('temp.rs') if File.exist?('temp.rs')
+    outputs = []
+    last_content = content
 
-      File.write('temp.rs', content)
+    name_types.each do |name_type|
+      name = name_type['name']
+      type = name_type['type']
+      output_to_return = Dir.chdir("./bean-stock/#{type}/#{name}") do
+        puts "Compiling #{name}"
 
-      # If we don't do this, we have issues installing gems
-      # not from the root Gemfile
-      output, status = Bundler.with_original_env do
-        Open3.capture2e('make run file=temp.rs')
+        File.delete('temp.rs') if File.exist?('temp.rs')
+
+        File.write('temp.rs', last_content)
+
+        # If we don't do this, we have issues installing gems
+        # not from the root Gemfile
+        output, status = Bundler.with_original_env do
+          Open3.capture2e('make run file=temp.rs')
+        end
+
+        puts "Output: #{output}"
+        puts "Status: #{status.exitstatus}"
+
+        output_to_return = {
+          output: output,
+          status: status.exitstatus,
+          message: "Received JSON data: last_content = #{last_content}, type = #{type}, name = #{name}"
+        }.to_json
+
+        last_content = output
+
+        puts "Output to return: #{output_to_return}"
+
+        outputs << output_to_return
       end
-
-      puts "Output: #{output}"
-      puts "Status: #{status.exitstatus}"
-
-      output_to_return = {
-        output: output,
-        status: status.exitstatus,
-        message: "Received JSON data: content = #{content}, type = #{type}, name = #{name}"
-      }.to_json
-
-      puts "Output to return: #{output_to_return}"
-
-      output_to_return
     end
 
-    output_to_return
+    { results: outputs }.to_json
   end
 
   # API endpoint to retrieve a message

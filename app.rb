@@ -5,7 +5,7 @@ require 'yaml'
 require 'open3'
 require 'json'
 require 'dtr_core'
-require 'dtr_to_rust'
+require 'soroban_rust_backend'
 
 require 'sinatra/cross_origin'
 

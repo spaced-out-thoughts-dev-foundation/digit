@@ -64,7 +64,7 @@ class App < Sinatra::Base
 
         File.write('temp.rs', last_content)
 
-        if type == 'backend' && name == 'dtr_to_rust'
+        if type == 'backend' && name == 'soroban_rust_backend'
           output = SorobanRustBackend::ContractHandler.generate(DTRCore::Contract.from_dtr_raw(File.read(input)))
         else
           # If we don't do this, we have issues installing gems

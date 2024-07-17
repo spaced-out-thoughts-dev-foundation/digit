@@ -63,6 +63,8 @@ class App < Sinatra::Base
 
         File.write('temp.rs', last_content)
 
+        puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{Time.now - starting}, phase: 'prep-write-temp-file' }"
+
         # If we don't do this, we have issues installing gems
         # not from the root Gemfile
         output, status = Bundler.with_original_env do
@@ -80,9 +82,7 @@ class App < Sinatra::Base
         outputs << output_to_return
       end
 
-      ending = Time.now
-
-      puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{ending - starting}, phase: 'full-compile' }"
+      puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{Time.now - starting}, phase: 'full-compile' }"
     end
 
     { results: outputs }.to_json

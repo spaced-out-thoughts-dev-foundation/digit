@@ -5,6 +5,7 @@ require 'yaml'
 require 'open3'
 require 'json'
 require 'dtr_core'
+require 'dtr_to_rust'
 
 require 'sinatra/cross_origin'
 
@@ -64,7 +65,7 @@ class App < Sinatra::Base
         File.write('temp.rs', last_content)
 
         if type == 'backend' && name == 'soroban_rust_backend'
-          output = DTRToRust::Generator.generate_from_file('temp.rs')
+          output = ::DTRToRust::Generator.generate_from_file('temp.rs')
 
           output_to_return = {
             output: output,

@@ -64,12 +64,14 @@ class App < Sinatra::Base
 
         File.write('temp.rs', last_content)
 
-        puts DTRToRust::Compiler.new.compile('temp.rs') if type == 'backend' && name == 'dtr_to_rust'
-
-        # If we don't do this, we have issues installing gems
-        # not from the root Gemfile
-        output, status = Bundler.with_original_env do
-          Open3.capture2e('make run file=temp.rs')
+        if type == 'backend' && name == 'dtr_to_rust'
+          output = SorobanRustBackend::ContractHandler.generate(DTRCore::Contract.from_dtr_raw(File.read(input)))
+        else
+          # If we don't do this, we have issues installing gems
+          # not from the root Gemfile
+          output, status = Bundler.with_original_env do
+            Open3.capture2e('make run file=temp.rs')
+          end
         end
 
         output_to_return = {

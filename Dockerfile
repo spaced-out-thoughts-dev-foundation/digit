@@ -1,6 +1,6 @@
-FROM ghcr.io/flavorjones/truffleruby:latest-slim
+FROM ruby:3.2-alpine
 
-RUN apt update && apt -y install build-essential git bash musl musl-dev gcc
+RUN apk add --no-cache build-base git bash musl musl-dev gcc
 RUN bundle config --global frozen 1
 
 WORKDIR /usr/src/app

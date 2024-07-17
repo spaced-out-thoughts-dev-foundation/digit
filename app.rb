@@ -66,17 +66,20 @@ class App < Sinatra::Base
 
         if type == 'backend' && name == 'soroban_rust_backend'
           output = SorobanRustBackend::ContractHandler.generate(DTRCore::Contract.from_dtr_raw(last_content))
+          status = 'success'
         else
           # If we don't do this, we have issues installing gems
           # not from the root Gemfile
           output, status = Bundler.with_original_env do
             Open3.capture2e('make run file=temp.rs')
           end
+
+          status = status.exitstatus
         end
 
         output_to_return = {
           output: output,
-          status: status.exitstatus,
+          status: status,
           message: "Received JSON data: last_content = #{last_content}, type = #{type}, name = #{name}"
         }.to_json
 

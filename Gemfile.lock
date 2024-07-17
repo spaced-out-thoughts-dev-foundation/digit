@@ -2,6 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     base64 (0.2.0)
+    digicus_web_backend (0.1.2)
+    digicus_web_frontend (0.1.1)
     dtr_core (0.12.1)
     dtr_to_rust (0.14.4)
     mustermann (3.0.0)
@@ -31,6 +33,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  digicus_web_backend (= 0.1.2)
+  digicus_web_frontend (= 0.1.1)
   dtr_core (= 0.12.1)
   dtr_to_rust (= 0.14.4)
   rackup (~> 2.1)

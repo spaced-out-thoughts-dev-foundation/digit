@@ -6,6 +6,8 @@ require 'open3'
 require 'json'
 require 'dtr_core'
 require 'soroban_rust_backend'
+require 'digicus_web_frontend'
+require 'digicus_web_backend'
 
 require 'sinatra/cross_origin'
 
@@ -66,6 +68,12 @@ class App < Sinatra::Base
 
         if type == 'backend' && name == 'soroban_rust_backend'
           output = SorobanRustBackend::ContractHandler.generate(DTRCore::Contract.from_dtr_raw(last_content))
+          status = 'success'
+        elsif type == 'frontend' && name == 'digicus_web_frontend'
+          output = DigicusWebFrontend::Compiler.to_dtr(last_content)
+          status = 'success'
+        elsif type == 'backend' && name == 'digicus_web_backend'
+          output = DigicusWebBackend::Compiler.to_dtr(last_content)
           status = 'success'
         else
           # If we don't do this, we have issues installing gems

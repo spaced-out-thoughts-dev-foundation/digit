@@ -73,7 +73,7 @@ class App < Sinatra::Base
           output = DigicusWebFrontend::Compiler.to_dtr(last_content)
           status = 'success'
         elsif type == 'backend' && name == 'digicus_web_backend'
-          output = DigicusWebBackend::Compiler.to_dtr(last_content)
+          output = DigicusWebBackend::Compiler.from_dtr(last_content)
           status = 'success'
         else
           # If we don't do this, we have issues installing gems

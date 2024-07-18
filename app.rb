@@ -61,39 +61,40 @@ class App < Sinatra::Base
 
       starting = Time.now
 
-      if type == 'backend' && name == 'soroban_rust_backend'
-        output = SorobanRustBackend::ContractHandler.generate(DTRCore::Contract.from_dtr_raw(last_content))
-        status = 'success'
-      elsif type == 'frontend' && name == 'digicus_web_frontend'
-        output = DigicusWebFrontend::Compiler.to_dtr(last_content)
-        status = 'success'
-      elsif type == 'backend' && name == 'digicus_web_backend'
-        output = DigicusWebBackend::Compiler.from_dtr(last_content)
-        status = 'success'
-      else
-        output, status = Dir.chdir("./bean-stock/#{type}/#{name}") do
-          File.delete('temp.rs') if File.exist?('temp.rs')
+      output_to_return = Dir.chdir("./bean-stock/#{type}/#{name}") do
+        File.delete('temp.rs') if File.exist?('temp.rs')
 
-          File.write('temp.rs', last_content)
+        File.write('temp.rs', last_content)
 
+        if type == 'backend' && name == 'soroban_rust_backend'
+          output = SorobanRustBackend::ContractHandler.generate(DTRCore::Contract.from_dtr_raw(last_content))
+          status = 'success'
+        elsif type == 'frontend' && name == 'digicus_web_frontend'
+          output = DigicusWebFrontend::Compiler.to_dtr(last_content)
+          status = 'success'
+        elsif type == 'backend' && name == 'digicus_web_backend'
+          output = DigicusWebBackend::Compiler.from_dtr(last_content)
+          status = 'success'
+        else
           # If we don't do this, we have issues installing gems
           # not from the root Gemfile
           output, status = Bundler.with_original_env do
             Open3.capture2e('make run file=temp.rs')
           end
 
-          [output, status.exitstatus]
+          status = status.exitstatus
         end
+
+        output_to_return = {
+          output: output,
+          status: status,
+          message: "Received JSON data: last_content = #{last_content}, type = #{type}, name = #{name}"
+        }.to_json
+
+        last_content = output
+
+        outputs << output_to_return
       end
-
-      output_to_return = {
-        output: output,
-        status: status,
-        message: "Received JSON data: last_content = #{last_content}, type = #{type}, name = #{name}"
-      }.to_json
-
-      last_content = output
-      outputs << output_to_return
 
       ending = Time.now
 

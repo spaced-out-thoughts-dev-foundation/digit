@@ -85,6 +85,8 @@ class App < Sinatra::Base
           status = status.exitstatus
         end
 
+        puts "[COMPILE]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }"
+
         output_to_return = {
           output: output,
           status: status,

@@ -12,7 +12,8 @@ require 'digicus_web_backend'
 require 'sinatra/cross_origin'
 
 class App < Sinatra::Base
-  debug_logs = ENV['DEBUG_LOGS'] == 'true'
+  # debug_logs = ENV['DEBUG_LOGS'] == 'true'
+  debug_logs = true
 
   configure do
     enable :cross_origin

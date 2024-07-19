@@ -12,8 +12,13 @@ require 'digicus_web_backend'
 require 'sinatra/cross_origin'
 
 class App < Sinatra::Base
+  debug_logs = ENV['DEBUG_LOGS'] == 'true'
+
   configure do
     enable :cross_origin
+
+    puts 'Booting up the server...'
+    puts "Debug logs enabled: #{debug_logs}"
   end
 
   before do
@@ -85,7 +90,7 @@ class App < Sinatra::Base
           status = status.exitstatus
         end
 
-        puts "[COMPILE]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }"
+        puts "[COMPILE]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }" if debug_logs
 
         output_to_return = {
           output: output,

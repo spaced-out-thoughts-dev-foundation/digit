@@ -2,10 +2,13 @@ require 'octokit'
 require 'toml-rb'
 
 class GithubListener
-  def initialize(token, config_path: 'github_listener_config.toml')
+  def initialize(token, logger, config_path: 'github_listener_config.toml')
     @client = client = Octokit::Client.new(access_token: token)
     @config = TomlRB::Parser.new(File.read(config_path)).hash
     @last_check = nil
+    @logger = logger
+
+    @logger.info '[Github Oracle]: { status: Initialized, output: Ok }'
   end
 
   def user
@@ -19,8 +22,8 @@ class GithubListener
   def issues_for_each_repo
     @config['repositories']['names'].each do |repo|
       @client.issues(repo).each do |issue|
-        puts "##{issue.number} - #{issue.title}"
-        puts "[Github Oracle]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }"
+        @logger.info "##{issue.number} - #{issue.title}"
+        @logger.info "[Github Oracle]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }"
       end
     end
   end
@@ -28,10 +31,10 @@ class GithubListener
   def start
     loop do
       now = Time.now
-      puts "[Github Oracle]: { time: #{now}, stage: Fetch, status: Ok }"
+      @logger.info "[Github Oracle]: { time: #{now}, stage: Fetch, status: Ok }"
       @last_check = now
     rescue StandardError => e
-      puts "[Github Oracle]: { time: #{now}, status: Error, output: #{e.message} }"
+      @logger.error "[Github Oracle]: { time: #{now}, status: Error, output: #{e.message} }"
     ensure
       sleep(30)
     end

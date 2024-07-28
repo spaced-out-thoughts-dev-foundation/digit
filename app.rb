@@ -1,4 +1,3 @@
-# app.rb
 require 'sinatra'
 require 'sinatra/base'
 require 'yaml'
@@ -10,6 +9,7 @@ require 'digicus_web_frontend'
 require 'digicus_web_backend'
 require 'sinatra/cross_origin'
 require './github_listener'
+require 'logger'
 
 class App < Sinatra::Base
   debug_logs = ENV['DEBUG_LOGS'] == 'true'
@@ -17,11 +17,14 @@ class App < Sinatra::Base
   configure do
     enable :cross_origin
 
-    puts 'Booting up the server...'
-    puts "Debug logs enabled: #{debug_logs}"
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::INFO
+
+    logger.info 'Booting up the server...'
+    logger.info "Debug logs enabled: #{debug_logs}"
 
     Thread.new do
-      GithubListener.new(ENV['GH_TOKEN']).start
+      GithubListener.new(ENV['GH_TOKEN'], logger).start
     end
   end
 
@@ -94,7 +97,7 @@ class App < Sinatra::Base
           status = status.exitstatus
         end
 
-        puts "[COMPILE]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }" if debug_logs
+        logger.info "[COMPILE]: { name: #{name}, type: #{type}, status: #{status}, output: #{output} }" if debug_logs
 
         output_to_return = {
           output: output,
@@ -109,7 +112,7 @@ class App < Sinatra::Base
 
       ending = Time.now
 
-      puts "[COMPILE]: { name: #{name}, type: #{type}, time: #{ending - starting}, phase: 'full-compile' }"
+      logger.info "[COMPILE]: { name: #{name}, type: #{type}, time: #{ending - starting}, phase: 'full-compile' }"
     end
 
     { results: outputs }.to_json
@@ -144,7 +147,7 @@ class App < Sinatra::Base
           source: loaded_manifest['source']
         }
       else
-        puts 'No manifest found'
+        logger.error 'No manifest found'
 
         nil
       end

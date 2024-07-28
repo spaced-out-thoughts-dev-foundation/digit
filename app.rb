@@ -8,8 +8,8 @@ require 'dtr_core'
 require 'soroban_rust_backend'
 require 'digicus_web_frontend'
 require 'digicus_web_backend'
-
 require 'sinatra/cross_origin'
+require './github_listener'
 
 class App < Sinatra::Base
   debug_logs = ENV['DEBUG_LOGS'] == 'true'
@@ -19,6 +19,10 @@ class App < Sinatra::Base
 
     puts 'Booting up the server...'
     puts "Debug logs enabled: #{debug_logs}"
+
+    Thread.new do
+      GithubListener.new(ENV['GH_TOKEN']).start
+    end
   end
 
   before do
